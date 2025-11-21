@@ -38,18 +38,18 @@ depending on which address domain the atomic instruction is accessing.
 No ordering constraint is implied to accesses to the other domain, and a
 FENCE instruction should be used to order across both domains.
 
-If both bits are clear, no additional ordering constraints are imposed
-on the atomic memory operation. If only the _aq_ bit is set, the atomic
-memory operation is treated as an _acquire_ access, i.e., no following
+[#norm:a_aq_rl_clear]#If both bits are clear, no additional ordering constraints are imposed
+on the atomic memory operation.# [#norm:a_aq_set]#If only the _aq_ bit is set, the atomic
+memory operation is treated as an _acquire_ access#, i.e., no following
 memory operations on this RISC-V hart can be observed to take place
-before the acquire memory operation. If only the _rl_ bit is set, the
-atomic memory operation is treated as a _release_ access, i.e., the
+before the acquire memory operation. [#norm:a_rl_set]#If only the _rl_ bit is set, the
+atomic memory operation is treated as a _release_ access#, i.e., the
 release memory operation cannot be observed to take place before any
-earlier memory operations on this RISC-V hart. If both the _aq_ and _rl_
+earlier memory operations on this RISC-V hart. [#norm:a_aq_rl_set]#If both the _aq_ and _rl_
 bits are set, the atomic memory operation is _sequentially consistent_
 and cannot be observed to happen before any earlier memory operations or
 after any later memory operations in the same RISC-V hart and to the
-same address domain.
+same address domain.#
 
 [[sec:lrsc]]
 === "Zalrsc" Extension for Load-Reserved/Store-Conditional Instructions
@@ -61,22 +61,22 @@ are performed with the load-reserved (LR) and store-conditional (SC)
 instructions. LR.W loads a word from the address in _rs1_, places the
 sign-extended value in _rd_, and registers a _reservation set_—a set of
 bytes that subsumes the bytes in the addressed word. SC.W conditionally
-writes a word in _rs2_ to the address in _rs1_: the SC.W succeeds only
+writes a word in _rs2_ to the address in _rs1_: [#norm:zalrsc_sc-w_success_cond]#the SC.W succeeds only
 if the reservation is still valid and the reservation set contains the
-bytes being written. If the SC.W succeeds, the instruction writes the
-word in _rs2_ to memory, and it writes zero to _rd_. If the SC.W fails,
+bytes being written.# [#norm:zalrsc_sc-w_success_resp]#If the SC.W succeeds, the instruction writes the
+word in _rs2_ to memory, and it writes zero to _rd_.# [#norm:zalrsc_sc-w_failure_resp]#If the SC.W fails,
 the instruction does not write to memory, and it writes a nonzero value
-to _rd_.
-No SC.W instruction shall retire unless it passes memory permission checks,
+to _rd_.#
+[#norm:zalrsc_sc-w_mem_permission_check]#No SC.W instruction shall retire unless it passes memory permission checks#,
 but it is UNSPECIFIED whether any side effects of implicit address translation
 and protection memory accesses (such as setting a page-table entry D bit)
 occur on a failed SC.W.
 For the purposes of memory protection, a failed SC.W may be
 treated like a store.
-Regardless of success or failure, executing an
-SC.W instruction invalidates any reservation held by this hart. LR.D and
-SC.D act analogously on doublewords and are only available on RV64. For
-RV64, LR.W and SC.W sign-extend the value placed in _rd_.
+[#norm:zalrsc_sc-w_resrv_invalidation]#Regardless of success or failure, executing an
+SC.W instruction invalidates any reservation held by this hart.# LR.D and
+SC.D act analogously on doublewords and are only available on RV64. [#norm:zalrsc_lr-w_sc-w_for_rv64]#For
+RV64, LR.W and SC.W sign-extend the value placed in _rd_.#
 
 [NOTE]
 ====
@@ -113,8 +113,8 @@ guaranteeing forward progress adds complexity to a system.
 ====
 
 The failure code with value 1 encodes an unspecified failure. Other
-failure codes are reserved at this time. Portable software should only
-assume the failure code will be non-zero.
+failure codes are reserved at this time. [#norm:zalrsc_failure_code_assumption]#Portable software should only
+assume the failure code will be non-zero.#
 
 [NOTE]
 ====
@@ -124,11 +124,11 @@ for the SLT/SLTU instructions. More specific failure codes might be
 defined in future versions or extensions to the ISA.
 ====
 
-For LR and SC, the Zalrsc extension requires that the address held in _rs1_
-be naturally aligned to the size of the operand (i.e., eight-byte
-aligned for _doublewords_ and four-byte aligned for _words_). If the
+[#norm:zalrsc_addr_align_req]#For LR and SC, the Zalrsc extension requires that the address held in _rs1_
+be naturally aligned to the size of the operand# (i.e., eight-byte
+aligned for _doublewords_ and four-byte aligned for _words_). [#norm:zalrsc_addr_misalign_exc]#If the
 address is not naturally aligned, an address-misaligned exception or an
-access-fault exception will be generated. The access-fault exception can
+access-fault exception will be generated.# The access-fault exception can
 be generated for a memory access that would otherwise be able to
 complete except for the misalignment, if the misaligned access should
 not be emulated.
@@ -143,13 +143,13 @@ provide for.
 
 An implementation can register an arbitrarily large reservation set on
 each LR, provided the reservation set includes all bytes of the
-addressed data word or doubleword. An SC can only pair with the most
-recent LR in program order. An SC may succeed only if no store from
+addressed data word or doubleword. [#norm:zalrsc_pairing]#An SC can only pair with the most
+recent LR in program order.# [#norm:zalrsc_no_s_btw_lrsc]#An SC may succeed only if no store from
 another hart to the reservation set can be observed to have occurred
-between the LR and the SC, and if there is no other SC between the LR
-and itself in program order. An SC may succeed only if no write from a
+between the LR and the SC#, and [#norm:zalrsc_no_sc_btw_lrsc]#if there is no other SC between the LR
+and itself in program order.# [#norm:zalrsc_no_w_btw_lrsc]#An SC may succeed only if no write from a
 device other than a hart to the bytes accessed by the LR instruction can
-be observed to have occurred between the LR and SC. Note this LR might
+be observed to have occurred between the LR and SC.# Note this LR might
 have had a different effective address and data size, but reserved the
 SC's address as part of the reservation set.
 
@@ -167,22 +167,22 @@ invalidate the reservation when they access other bytes in the
 reservation set.
 ====
 
-The SC must fail if the address is not within the reservation set of the
-most recent LR in program order. The SC must fail if a store to the
+[#norm:zalrsc_sc_diff_addr_fail]#The SC must fail if the address is not within the reservation set of the
+most recent LR in program order.# [#norm:zalrsc_s_btw_sc_fail]#The SC must fail if a store to the
 reservation set from another hart can be observed to occur between the
-LR and SC. The SC must fail if a write from some other device to the
-bytes accessed by the LR can be observed to occur between the LR and SC.
+LR and SC.# [#norm:zalrsc_w_btw_sc_fail]#The SC must fail if a write from some other device to the
+bytes accessed by the LR can be observed to occur between the LR and SC.#
 (If such a device writes the reservation set but does not write the
-bytes accessed by the LR, the SC may or may not fail.) An SC must fail
+bytes accessed by the LR, the SC may or may not fail.) [#norm:zalrsc_sc_btw_sc_fail]#An SC must fail
 if there is another SC (to any address) between the LR and the SC in
-program order. The precise statement of the atomicity requirements for
+program order.# The precise statement of the atomicity requirements for
 successful LR/SC sequences is defined by the Atomicity Axiom in
 <<rvwmo>>.
 
 [NOTE]
 ====
-The platform should provide a means to determine the size and shape of
-the reservation set.
+[#norm:zalrsc_resrv_set_sz_shape]#The platform should provide a means to determine the size and shape of
+the reservation set.#
 
 A platform specification may constrain the size and shape of the
 reservation set.
@@ -202,8 +202,8 @@ SC, in program order. This is a restriction to the Atomicity Axiom in
 expected common implementations that operate in this manner.
 ====
 
-An SC instruction can never be observed by another RISC-V hart before
-the LR instruction that established the reservation.
+[#norm:zalrsc_obsrv_seq]#An SC instruction can never be observed by another RISC-V hart before
+the LR instruction that established the reservation.#
 
 [NOTE]
 ====
@@ -227,9 +227,9 @@ same RISC-V hart. This can be appropriate when the LR/SC sequence is
 used to implement a parallel reduction operation.
 ====
 
-Software should not set the _rl_ bit on an LR instruction unless the
-_aq_ bit is also set, nor should software set the _aq_ bit on an SC
-instruction unless the _rl_ bit is also set. LR._rl_ and SC._aq_
+[#norm:zalrsc_lr-rl_set_seq]#Software should not set the _rl_ bit on an LR instruction unless the
+_aq_ bit is also set#, [#norm:zalrsc_sc-aq_set_seq]#nor should software set the _aq_ bit on an SC
+instruction unless the _rl_ bit is also set.# LR._rl_ and SC._aq_
 instructions are not guaranteed to provide any stronger ordering than
 those with both bits clear, but may result in lower performance.
 
@@ -264,24 +264,24 @@ using LR/SC to implement a compare-and-swap function is shown in
 The Zalrsc extension defines _constrained LR/SC loops_, which have
 the following properties:
 
-* The loop comprises only an LR/SC sequence and code to retry the
+* [#norm:zalrsc_loop_instr_len]#The loop comprises only an LR/SC sequence and code to retry the
 sequence in the case of failure, and must comprise at most 16
-instructions placed sequentially in memory.
+instructions placed sequentially in memory.#
 * An LR/SC sequence begins with an LR instruction and ends with an SC
-instruction. The dynamic code executed between the LR and SC
+instruction. [#norm:zalrsc_loop_instrs]#The dynamic code executed between the LR and SC
 instructions can only contain instructions from the base ''I''
 instruction set, excluding loads, stores, backward jumps, taken backward
-branches, JALR, FENCE, and SYSTEM instructions.
+branches, JALR, FENCE, and SYSTEM instructions.#
 Compressed forms of the aforementioned ''I'' instructions in the
 C (hence Zca) and Zcb extensions are also permitted.
 * The code to retry a failing LR/SC sequence can contain backwards jumps
 and/or branches to repeat the LR/SC sequence, but otherwise has the same
 constraint as the code between the LR and SC.
-* The LR and SC addresses must lie within a memory region with the
-_LR/SC eventuality_ property. The execution environment is responsible
+* [#norm:zalrsc_same_addr_region]#The LR and SC addresses must lie within a memory region with the
+_LR/SC eventuality_ property.# The execution environment is responsible
 for communicating which regions have this property.
-* The SC must be to the same effective address and of the same data size
-as the latest LR executed by the same hart.
+* [#norm:zalrsc_same_sz_addr]#The SC must be to the same effective address and of the same data size
+as the latest LR executed by the same hart.#
 
 LR/SC sequences that do not lie within constrained LR/SC loops are
 _unconstrained_. Unconstrained LR/SC sequences might succeed on some
@@ -311,6 +311,7 @@ unconditionally fail any unconstrained LR/SC sequence.
 If a hart _H_ enters a constrained LR/SC loop, the execution environment
 must guarantee that one of the following events eventually occurs:
 
+[[norm:zalrsc_eventuality]]
 * _H_ or some other hart executes a successful SC to the reservation set
 of the LR instruction in _H_'s constrained LR/SC loops.
 * Some other hart executes an unconditional store or AMO instruction to
@@ -376,27 +377,27 @@ ignore the upper 32 bits of the original value of _rs2_.
 
 For AMOs, the Zaamo extension requires that the address held in _rs1_ be
 naturally aligned to the size of the operand (i.e., eight-byte aligned
-for _doublewords_ and four-byte aligned for _words_). If the address
+for _doublewords_ and four-byte aligned for _words_). [#norm:zaamo_addr_misalign_exc]#If the address
 is not naturally aligned, an address-misaligned exception or an
-access-fault exception will be generated. The access-fault exception can
+access-fault exception will be generated.# The access-fault exception can
 be generated for a memory access that would otherwise be able to
 complete except for the misalignment, if the misaligned access should
 not be emulated.
 
-The misaligned atomicity granule PMA, defined in Volume II of this manual,
-optionally relaxes this alignment requirement.
-If present, the misaligned atomicity granule PMA specifies the size
-of a misaligned atomicity granule, a power-of-two number of bytes.
-The misaligned atomicity granule PMA applies only to AMOs, loads and stores
+[#norm:zaamo_ag_pma_param]#The misaligned atomicity granule PMA, defined in Volume II of this manual,
+optionally relaxes this alignment requirement.#
+[#norm:zaamo_misalgn_granule_sz]#If present, the misaligned atomicity granule PMA specifies the size
+of a misaligned atomicity granule, a power-of-two number of bytes.#
+[#norm:zaamo_mg_pma_app]#The misaligned atomicity granule PMA applies only to AMOs, loads and stores
 defined in the base ISAs, and loads and stores of no more than XLEN bits
-defined in the F, D, and Q extensions.
-For an instruction in that set, if all accessed bytes lie within the same
+defined in the F, D, and Q extensions.#
+[#norm:zaamo_mg_pma_bounded_atmcty]#For an instruction in that set, if all accessed bytes lie within the same
 misaligned atomicity granule, the instruction will not raise an exception for
 reasons of address alignment, and the instruction will give rise to only one
-memory operation for the purposes of RVWMO--i.e., it will execute atomically.
+memory operation for the purposes of RVWMO--i.e., it will execute atomically.#
 
-The operations supported are swap, integer add, bitwise AND, bitwise OR,
-bitwise XOR, and signed and unsigned integer maximum and minimum.
+[#norm:zaamo_supported_ops]#The operations supported are swap, integer add, bitwise AND, bitwise OR,
+bitwise XOR, and signed and unsigned integer maximum and minimum.#
 Without ordering constraints, these AMOs can be used to implement
 parallel reduction operations, where typically the return value would be
 discarded by writing to `x0`.
@@ -423,14 +424,14 @@ the LR/SC instructions provided by the Zalrsc extension.
 ====
 
 To help implement multiprocessor synchronization, the AMOs optionally
-provide release consistency semantics. If the _aq_ bit is set, then no
+provide release consistency semantics. [#norm:zaamo_set_aq]#If the _aq_ bit is set, then no
 later memory operations in this RISC-V hart can be observed to take
-place before the AMO. Conversely, if the _rl_ bit is set, then other
+place before the AMO.# Conversely, [#norm:zaamo_set_rl]#if the _rl_ bit is set, then other
 RISC-V harts will not observe the AMO before memory accesses preceding
-the AMO in this RISC-V hart. Setting both the _aq_ and the _rl_ bit on
+the AMO in this RISC-V hart.# [#norm:zaamo_set_aq_rl]#Setting both the _aq_ and the _rl_ bit on
 an AMO makes the sequence sequentially consistent, meaning that it
 cannot be reordered with earlier or later memory operations from the
-same hart.
+same hart.#
 
 [NOTE]
 ====

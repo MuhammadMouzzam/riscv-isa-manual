@@ -1,0 +1,87 @@
+---
+# yaml-language-server: $schema=../docs-resources/schemas/defs-schema.json
+
+chapter_name: A Extension
+
+$schema: "../docs-resources/schemas/defs-schema.json#"
+
+normative_rule_definitions:
+  - name: a_aq_rl_clear
+    tags: ["norm:a_aq_rl_clear"]
+  - name: a_aq_set
+    tags: ["norm:a_aq_set"]
+  - name: a_rl_set
+    tags: ["norm:a_rl_set"]
+  - name: a_aq_rl_set
+    tags: ["norm:a_aq_rl_set"]
+  - name: zalrsc_sc-w_success_cond
+    tags: ["norm:zalrsc_sc-w_success_cond"]
+  - name: zalrsc_sc-w_success_resp
+    tags: ["norm:zalrsc_sc-w_success_resp"]
+  - name: zalrsc_sc-w_failure_resp
+    tags: ["norm:zalrsc_sc-w_failure_resp"]
+  - name: zalrsc_sc-w_mem_permission_check
+  - name: zalrsc_obsrv_seq
+    tags: ["norm:zalrsc_obsrv_seq"]
+    tags: ["norm:zalrsc_sc-w_mem_permission_check"]
+  - name: zalrsc_sc-w_resrv_invalidation
+    tags: ["norm:zalrsc_sc-w_resrv_invalidation"]
+  - name: zalrsc_lr-w_sc-w_for_rv64
+    tags: ["norm:zalrsc_lr-w_sc-w_for_rv64"]
+  - name: zalrsc_failure_code_assumption
+    tags: ["norm:zalrsc_failure_code_assumption"]
+  - name: zalrsc_addr_align_req
+    tags: ["norm:zalrsc_addr_align_req"]
+  - name: zalrsc_addr_misalign_exc
+    tags: ["norm:zalrsc_addr_misalign_exc"]
+  - name: zalrsc_pairing
+    tags: ["norm:zalrsc_pairing"]
+  - name: zalrsc_no_s_btw_lrsc
+    tags: ["norm:zalrsc_no_s_btw_lrsc"]
+  - name: zalrsc_no_sc_btw_lrsc
+    tags: ["norm:zalrsc_no_sc_btw_lrsc"]
+  - name: zalrsc_no_w_btw_lrsc
+    tags: ["norm:zalrsc_no_w_btw_lrsc"]
+  - name: zalrsc_sc_diff_addr_fail
+    tags: ["norm:zalrsc_sc_diff_addr_fail"]
+  - name: zalrsc_s_btw_sc_fail
+    tags: ["norm:zalrsc_s_btw_sc_fail"]
+  - name: zalrsc_w_btw_sc_fail
+    tags: ["norm:zalrsc_w_btw_sc_fail"]
+  - name: zalrsc_sc_btw_sc_fail
+    tags: ["norm:zalrsc_sc_btw_sc_fail"]
+  - name: zalrsc_resrv_set_sz_shape
+    tags: ["norm:zalrsc_resrv_set_sz_shape"]
+  - name: zalrsc_lr-rl_set_seq
+    tags: ["norm:zalrsc_lr-rl_set_seq"]
+  - name: zalrsc_sc-aq_set_seq
+    tags: ["norm:zalrsc_sc-aq_set_seq"]
+  - name: zalrsc_loop_instr_len
+    tags: ["norm:zalrsc_loop_instr_len"]
+  - name: zalrsc_loop_instrs
+    tags: ["norm:zalrsc_loop_instrs"]
+  - name: zalrsc_same_addr_region
+    tags: ["norm:zalrsc_same_addr_region"]
+  - name: zalrsc_same_sz_addr
+    tags: ["norm:zalrsc_same_sz_addr"]
+  - name: zalrsc_eventuality
+    summary: Execution enviroment must ensure a hart in LR/SC loop must face one of these events eventually
+    tags: ["norm:zalrsc_eventuality"]
+  - name: zaamo_addr_misalign_exc
+    tags: ["norm:zaamo_addr_misalign_exc"]
+  - name: zaamo_ag_pma_param
+    tags: ["norm:zaamo_ag_pma_param"]
+  - name: zaamo_misalgn_granule_sz
+    tags: ["norm:zaamo_misalgn_granule_sz"]
+  - name: zaamo_mg_pma_bounded_atmcty
+    tags: ["norm:zaamo_mg_pma_bounded_atmcty"]
+  - name: zaamo_mg_pma_app
+    tags: ["norm:zaamo_mg_pma_app"]
+  - name: zaamo_supported_ops
+    tags: ["norm:zaamo_supported_ops"]
+  - name: zaamo_set_aq
+    tags: ["norm:zaamo_set_aq"]
+  - name: zaamo_set_rl
+    tags: ["norm:zaamo_set_rl"]
+  - name: zaamo_set_aq_rl
+    tags: ["norm:zaamo_set_aq_rl"]
